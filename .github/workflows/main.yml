@@ -107,12 +107,10 @@ jobs:
     needs: is-latest
     name: "Build for Linux"
     runs-on: ubuntu-latest
-      - name: Install build tools
+      - name: Build
         run: |
           sudo apt-get update
           sudo apt-get install -y curl jq git build-essential yasm
-      - name: Build
-        run: |
           bash ./build-linux.sh ${{ github.event.inputs.nwjs_version }} linux
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
