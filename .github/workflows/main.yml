@@ -107,6 +107,7 @@ jobs:
     needs: is-latest
     name: "Build for Linux"
     runs-on: ubuntu-latest
+    steps: 
       - name: Build
         run: |
           sudo apt-get update
