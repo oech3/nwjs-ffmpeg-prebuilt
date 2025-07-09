@@ -109,6 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: Build
+        working-directory: ${{ github.workspace }}
         run: |
           sudo apt-get update
           sudo apt-get install -y curl jq git build-essential yasm
