@@ -39,40 +39,27 @@ jobs:
             echo "nw=$NW_VERSION" >> $GITHUB_OUTPUT
           fi
 
-
   build-win:
     needs: is-latest
-    name: "Build for Windows"
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: powershell
+    name: "Build for Windows on Ubuntu"
+    runs-on: ubuntu-latest
     steps:
-      - name: Setup Node
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version: 20
       - name: Checkout code
         uses: actions/checkout@v4.2.2
-      - name: Debug NW version
+      - name: Setup build tools
         run: |
-          echo "NW Version: ${{ needs.is-latest.outputs.nw }}"
-      - name: Copy to C drive
-        run: cp D:\a C:\ -Recurse
-      - name: Support long paths
-        run: git config --system core.longpaths true
-      - name: npm install, build and test
-        working-directory: "C:/a/${{ github.event.repository.name }}/${{ github.event.repository.name }}"
+          sudo apt-get update
+          sudo apt-get install -y curl jq git build-essential nasm zip mingw-64
+      - name: Build
+        working-directory: ${{ github.workspace }}
         run: |
-          pwd
-          npm install
-          node build --arch x64 --version ${{ needs.is-latest.outputs.nw }}
-          node build --arch ia32 --version ${{ needs.is-latest.outputs.nw }}
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} windows
+          zip -9 /tmp/neff/release/${{ needs.is-latest.outputs.nw }}-windows-x64.zip /tmp/nwff/release/libffmpeg.so
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: win
-          path: 'c:/a/**/build/out/*.zip'
+          name: linux
+          path: '/tmp/nwff/release/*.zip'
 
   build-macos:
     needs: is-latest
