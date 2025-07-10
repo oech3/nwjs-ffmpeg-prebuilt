@@ -91,7 +91,7 @@ jobs:
       - name: Setup build tools
         run: |
           brew update
-          brew install curl jq git nasm ripgrep zip bash
+          brew install jq git nasm ripgrep zip bash
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Setup build tools
         run: |
           brew update
-          brew install curl jq git nasm ripgrep zip bash
+          brew install jq git nasm ripgrep zip bash
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
