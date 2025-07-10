@@ -66,7 +66,7 @@ declare -gA strip=(
 [linux-x86_32]='strip --strip-unneeded'
 [osx]='strip -x'
 [win]='x86_64-w64-mingw32-strip --strip-unneeded'
-[win-ia32]='i686-w64-mingw32-gcc-strip --strip-unneeded'
+[win-ia32]='i686-w64-mingw32-strip --strip-unneeded'
 )
 declare -gA gccflag=(
 [linux]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
