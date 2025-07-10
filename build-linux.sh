@@ -38,7 +38,8 @@ git fetch --depth=1 origin $_commit
 git checkout $_commit
 # Use ffmpeg's native opus decoder not in kAllowedAudioCodecs at https://github.com/chromium/chromium/blob/main/media/ffmpeg/ffmpeg_common.cc
 sed -i.bak "s/^ *\.p\.name *=.*/.p.name=\"libopus\",/" libavcodec/opus/dec.c
-#diff libavcodec/opus/dec.c{,.bak}
+diff libavcodec/opus/dec.c{,.bak}
+export CC="${cc["$2"]}"
 ./configure \
   --disable-{debug,all,autodetect,doc,iconv,network,symver} \
   --disable-{error-resilience,faan,iamf} \
