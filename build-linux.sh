@@ -4,7 +4,7 @@
 declare -A ffbuildflags=(
 [linux-x64]=
 [linux-ia32]='--arch=x86 --target-os=linux --cpu=x86 --enable-cross-compile'
-[osx-x64]='--arch=x86_64 --enable-cross-compile'
+[osx-x64]='--arch=x86_64 --enable-cross-compile --cc="clang -arch x86_64"'
 [osx-arm64]='--arch=arm64'
 [win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
 [win-ia32]='--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-'
@@ -38,7 +38,7 @@ git fetch --depth=1 origin $_commit
 git checkout $_commit
 # Use ffmpeg's native opus decoder not in kAllowedAudioCodecs at https://github.com/chromium/chromium/blob/main/media/ffmpeg/ffmpeg_common.cc
 sed -i.bak "s/^ *\.p\.name *=.*/.p.name=\"libopus\",/" libavcodec/opus/dec.c
-#diff libavcodec/opus/dec.c{,.bak}
+diff libavcodec/opus/dec.c{,.bak}
 ./configure \
   --disable-{debug,all,autodetect,doc,iconv,network,symver} \
   --disable-{error-resilience,faan,iamf} \
@@ -61,7 +61,7 @@ cd ../release
 declare -A cc=(
 [linux-x64]=gcc
 [linux-ia32]='gcc -m32'
-[osx-x64]=clang
+[osx-x64]='clang -arch x86_64'
 [osx-arm64]=clang
 [win-x64]=x86_64-w64-mingw32-gcc
 [win-ia32]=i686-w64-mingw32-gcc
