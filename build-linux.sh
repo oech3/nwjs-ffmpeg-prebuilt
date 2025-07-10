@@ -1,7 +1,7 @@
-#!/bin/zsh -e
+#!/bin/bash -e
 # https://chromium.googlesource.com/chromium/third_party/ffmpeg/+/refs/heads/master/
 # See BUILD.gn and chromium/config/Chrome/linux/x64/
-typeset -A ffbuildflags=(
+declare -A ffbuildflags=(
 [linux-x64]=
 [linux-ia32]='--arch=x86 --target-os=linux --cpu=x86 --enable-cross-compile'
 [osx-x64]='--arch=x86_64 --target-os=darwin --cpu=x86_64'
@@ -9,7 +9,7 @@ typeset -A ffbuildflags=(
 [win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
 [win-ia32]='--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-'
 )
-typeset -A extcflags=(
+declare -A extcflags=(
 [linux-x64]='-fno-math-errno -fno-signed-zeros'
 [linux-ia32]='-m32 -fno-math-errno -fno-signed-zeros'
 [osx-x64]=
@@ -17,7 +17,7 @@ typeset -A extcflags=(
 [win-x64]=
 [win-ia32]=
 )
-typeset -A extldflags=(
+declare -A extldflags=(
 [linux-x64]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
 [linux-ia32]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
 [osx-x64]=
@@ -57,7 +57,7 @@ mv -f libavcodec/opus/dec.c.patched libavcodec/opus/dec.c
   make -j3 install
 
 cd ../release
-typeset -A cc=(
+declare -A cc=(
 [linux-x64]=gcc
 [linux-ia32]='gcc -m32'
 [osx-x64]=clang
@@ -65,7 +65,7 @@ typeset -A cc=(
 [win-x64]=x86_64-w64-mingw32-gcc
 [win-ia32]=i686-w64-mingw32-gcc
 )
-typeset -A strip=(
+declare -A strip=(
 [linux-x64]='strip --strip-unneeded'
 [linux-ia32]='strip --strip-unneeded'
 [osx-x64]='strip -x'
@@ -73,7 +73,7 @@ typeset -A strip=(
 [win-x64]='x86_64-w64-mingw32-strip --strip-unneeded'
 [win-ia32]='i686-w64-mingw32-strip --strip-unneeded'
 )
-typeset -A gccflag=(
+declare -A gccflag=(
 [linux-x64]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
 [linux-ia32]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
 [osx-x64]=
@@ -81,7 +81,7 @@ typeset -A gccflag=(
 [win-x64]='-lbcrypt'
 [win-ia32]='-lbcrypt'
 )
-typeset -A ldwholearchive=(
+declare -A ldwholearchive=(
 [linux-x64]='-Wl,--whole-archive '
 [linux-ia32]='-Wl,--whole-archive '
 [osx-x64]='-Wl,-force_load,'
@@ -89,7 +89,7 @@ typeset -A ldwholearchive=(
 [win-x64]='-Wl,--whole-archive '
 [win-ia32]='-Wl,--whole-archive '
 )
-typeset -A ldnowholearchive=(
+declare -A ldnowholearchive=(
 [linux-x64]='-Wl,--no-whole-archive '
 [linux-ia32]='-Wl,--no-whole-archive '
 [osx-x64]=
@@ -97,7 +97,7 @@ typeset -A ldnowholearchive=(
 [win-x64]='-Wl,--no-whole-archive '
 [win-ia32]='-Wl,--no-whole-archive '
 )
-typeset -A libext=(
+declare -A libext=(
 [linux-x64]=so
 [linux-ia32]=so
 [osx-x64]=dylib
