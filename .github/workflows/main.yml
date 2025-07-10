@@ -54,11 +54,11 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} windows
-          zip -9 /tmp/neff/release/${{ needs.is-latest.outputs.nw }}-windows-x64.zip /tmp/nwff/release/libffmpeg.so
+          zip -9 /tmp/neff/release/${{ needs.is-latest.outputs.nw }}-windows-x64.zip /tmp/nwff/release/libffmpeg.dll
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: linux
+          name: windows
           path: '/tmp/nwff/release/*.zip'
 
   build-macos:
@@ -73,6 +73,7 @@ jobs:
       - name: Delete unused SDKs
         # To free up disk space to not run out during the run
         run: |
+          false
           sudo rm -rf ~/.dotnet
           sudo rm -rf /Library/Android
           sudo rm -rf /Library/Developer/CoreSimulator
