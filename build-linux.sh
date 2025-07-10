@@ -30,7 +30,8 @@ mkdir -p ${srcdir}/chromium-ffmpeg
 cd ${srcdir}/chromium-ffmpeg
 # Fetch source
 _chromium=$(curl -s https://nwjs.io/versions.json | jq -r ".versions[] | select(.version==\"v$1\") | .components.chromium")
-_commit=$(curl -sL https://raw.githubusercontent.com/chromium/chromium/refs/tags/${_chromium}/DEPS | grep -oP "'ffmpeg_revision': '\K[0-9a-f]{40}'" | tr -d \')
+# Use rg for macOS
+_commit=$(curl -sL https://raw.githubusercontent.com/chromium/chromium/refs/tags/${_chromium}/DEPS | rg -oP "'ffmpeg_revision': '\K[0-9a-f]{40}'" | tr -d \')
 git init
 git remote add origin https://chromium.googlesource.com/chromium/third_party/ffmpeg
 git fetch --depth=1 origin $_commit
