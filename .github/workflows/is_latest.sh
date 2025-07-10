@@ -1,5 +1,5 @@
 #!/bin/bash
-exit 0
+exit 1
 # Check if the script is triggered by workflow_dispatch
 if [ "$1" == "workflow_dispatch" ]; then
     echo "Manual build triggered, skipping version check."
