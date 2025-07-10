@@ -49,11 +49,11 @@ jobs:
       - name: Setup build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl jq git build-essential nasm zsh zip mingw-w64
+          sudo apt-get install -y curl jq git build-essential nasm zip mingw-w64
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
-          zsh ./build-linux.sh ${{ needs.is-latest.outputs.nw }} win-x64
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} win-x64
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
@@ -70,11 +70,11 @@ jobs:
       - name: Setup build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl jq git build-essential nasm zsh zip mingw-w64
+          sudo apt-get install -y curl jq git build-essential nasm zip mingw-w64
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
-          zsh ./build-linux.sh ${{ needs.is-latest.outputs.nw }} win-ia32
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} win-ia32
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
@@ -91,11 +91,11 @@ jobs:
       - name: Setup build tools
         run: |
           brew update
-          brew install curl jq git nasm zip
+          brew install curl jq git nasm zip bash
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
-          zsh ./build-linux.sh ${{ needs.is-latest.outputs.nw }} osx-x64
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} osx-x64
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
@@ -112,11 +112,11 @@ jobs:
       - name: Setup build tools
         run: |
           brew update
-          brew install curl jq git nasm zip
+          brew install curl jq git nasm zip bash
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
-          zsh ./build-linux.sh ${{ needs.is-latest.outputs.nw }} osx-arm64
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} osx-arm64
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
@@ -133,11 +133,11 @@ jobs:
       - name: Setup build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl jq git build-essential nasm zsh zip
+          sudo apt-get install -y curl jq git build-essential nasm zip
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
-          zsh ./build-linux.sh ${{ needs.is-latest.outputs.nw }} linux
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} linux
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
