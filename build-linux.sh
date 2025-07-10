@@ -4,7 +4,7 @@
 declare -A ffbuildflags=(
 [linux-x64]=
 [linux-ia32]='--arch=x86 --enable-cross-compile'
-[osx-x64]='--arch=x86_64 --enable-cross-compile \"--cc=clang -arch x86_64\"'
+[osx-x64]='--arch=x86_64 --enable-cross-compile'
 [osx-arm64]='--arch=arm64'
 [win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
 [win-ia32]='--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-'
@@ -13,7 +13,7 @@ declare -A extcflags=(
 [linux-x64]='-fno-math-errno -fno-signed-zeros'
 [linux-ia32]='-m32 -fno-math-errno -fno-signed-zeros'
 [osx-x64]=
-[osx-arm64]=
+[osx-arm64]='-arch x86_64'
 [win-x64]=
 [win-ia32]=
 )
