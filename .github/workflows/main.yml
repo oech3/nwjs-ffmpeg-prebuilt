@@ -170,8 +170,8 @@ jobs:
           files: |
             release/mac/*.zip
             release/linux/*.zst
-            release/win/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/build/out/*.zip
-            release/winia32/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/build/out/*.zip
+            release/win/*.zip
+            release/win-ia32/*.zip
           tag_name: ${{ env.NW }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
