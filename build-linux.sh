@@ -3,7 +3,7 @@
 # See BUILD.gn and chromium/config/Chrome/linux/x64/
 declare -A ffbuildflags=(
 [linux-x64]=
-[linux-ia32]='--arch=x86 --enable-cross-compile --cross-prefix=i686-linux-gnu-'
+[linux-ia32]='--arch=x86 --enable-cross-compile'
 [osx-x64]='--arch=x86_64 --enable-cross-compile \"--cc=clang -arch x86_64\"'
 [osx-arm64]='--arch=arm64'
 [win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
@@ -19,7 +19,7 @@ declare -A extcflags=(
 )
 declare -A extldflags=(
 [linux-x64]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
-[linux-ia32]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
+[linux-ia32]='-m32 -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
 [osx-x64]=
 [osx-arm64]=
 [win-x64]='-Wl,--nxcompat -Wl,--dynamicbase'
@@ -60,7 +60,7 @@ diff libavcodec/opus/dec.c{,.bak}
 cd ../release
 declare -A cc=(
 [linux-x64]=gcc
-[linux-ia32]=i686-linux-gnu-gcc
+[linux-ia32]='gcc -m32'
 [osx-x64]='clang -arch x86_64'
 [osx-arm64]=clang
 [win-x64]=x86_64-w64-mingw32-gcc
