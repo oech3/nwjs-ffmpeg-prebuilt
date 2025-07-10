@@ -89,12 +89,12 @@ declare -gA ldwholearchive=(
 [win-ia32]='-Wl,--whole-archive '
 )
 declare -gA ldnowholearchive=(
-[linux-x64]='-Wl,--no-whole-archive'
-[linux-ia32]='-Wl,--no-whole-archive'
+[linux-x64]='-Wl,--no-whole-archive '
+[linux-ia32]='-Wl,--no-whole-archive '
 [osx-x64]=
 [osx-arm64]=
-[win-x64]='-Wl,--no-whole-archive'
-[win-ia32]='-Wl,--no-whole-archive'
+[win-x64]='-Wl,--no-whole-archive '
+[win-ia32]='-Wl,--no-whole-archive '
 )
 declare -gA libext=(
 [linux-x64]=so
