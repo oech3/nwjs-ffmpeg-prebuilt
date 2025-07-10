@@ -60,7 +60,7 @@ diff libavcodec/opus/dec.c{,.bak}
 cd ../release
 declare -A cc=(
 [linux-x64]=gcc
-[linux-ia32]='gcc -m32'
+[linux-ia32]=i686-linux-gnu-gcc
 [osx-x64]='clang -arch x86_64'
 [osx-arm64]=clang
 [win-x64]=x86_64-w64-mingw32-gcc
