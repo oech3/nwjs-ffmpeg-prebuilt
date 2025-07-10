@@ -12,8 +12,8 @@ declare -A ffbuildflags=(
 declare -A extcflags=(
 [linux-x64]='-fno-math-errno -fno-signed-zeros'
 [linux-ia32]='-m32 -fno-math-errno -fno-signed-zeros'
-[osx-x64]=
-[osx-arm64]='-arch x86_64'
+[osx-x64]='-arch x86_64'
+[osx-arm64]=
 [win-x64]=
 [win-ia32]=
 )
