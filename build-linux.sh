@@ -3,20 +3,20 @@
 # See BUILD.gn and chromium/config/Chrome/linux/x64/
 declare -gA ffbuildflags=(
 [linux]=
-[linux-x86_32]='--arch=x86 --target-os=linux --cpu=x86'
+[linux-x86_32]='--arch=x86 --target-os=linux --cpu=x86 --enable-cross-compile'
 [macos]='--arch=x86_64 --target-os=darwin --cpu=x86_64'
-[windows]='--arch=x86_64 --target-os=mingw64 --cpu=x86_64'
+[windows]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
 )
 declare -gA extcflags=(
 [linux]='-fno-math-errno -fno-signed-zeros'
-[linux-86_32]='-fno-math-errno -fno-signed-zeros'
-[macos]=''
-[windows]=''
+[linux-86_32]='-m32 -fno-math-errno -fno-signed-zeros'
+[macos]=
+[windows]=
 )
 declare -gA extldflags=(
 [linux]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
 [linux-x86_32]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
-[macos]=''
+[macos]=
 [windows]='-Wl,--nxcompat -Wl,--dynamicbase'
 )
 srcdir=/tmp/nwff
@@ -33,8 +33,9 @@ git checkout $_commit
 sed '/^ *\.p\.name *=.*/c\.p.name="libopus",' libavcodec/opus/dec.c > libavcodec/opus/dec.c.patched
 mv -f libavcodec/opus/dec.c.patched libavcodec/opus/dec.c
 ./configure \
-  --disable-{all,autodetect,doc,iconv,network} \
+  --disable-{debug,all,autodetect,doc,iconv,network,symver} \
   --disable-{error-resilience,faan,iamf} \
+  --disable-{schannel,securetransport} \
   --enable-static --disable-shared \
   --enable-av{format,codec,util} \
   --enable-swresample \
@@ -52,9 +53,9 @@ mv -f libavcodec/opus/dec.c.patched libavcodec/opus/dec.c
 cd ../release
 declare -gA cc=(
 [linux]=gcc
-[linux-x86_32]='gcc -m32' # unsupported
+[linux-x86_32]='gcc -m32'
 [macos]=clang # unsupported
-[windows]=x86_64-w64-mingw32-gcc # unsupported
+[windows]=x86_64-w64-mingw32-gcc
 )
 declare -gA strip=(
 [linux]='strip --strip-unneeded'
@@ -65,19 +66,19 @@ declare -gA strip=(
 declare -gA gccflag=(
 [linux]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
 [linux-x86_32]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
-[macos]=''
-[windows]=''
+[macos]=
+[windows]='-lbcrypt'
 )
 declare -gA ldwholearchive=(
 [linux]='whole-archive '
 [linux-x86_32]='whole-archive '
 [macos]='force_load,'
-[windows]='whole-archive'
+[windows]='whole-archive '
 )
 declare -gA ldnowholearchive=(
 [linux]='--no-whole-archive'
 [linux-x86_32]='--no-whole-archive'
-[macos]=''
+[macos]=
 [windows]='--no-whole-archive'
 )
 declare -gA libext=(
