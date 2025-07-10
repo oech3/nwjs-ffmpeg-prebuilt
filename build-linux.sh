@@ -4,20 +4,23 @@
 declare -gA ffbuildflags=(
 [linux]=
 [linux-x86_32]='--arch=x86 --target-os=linux --cpu=x86 --enable-cross-compile'
-[macos]='--arch=x86_64 --target-os=darwin --cpu=x86_64'
-[windows]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
+[osx]='--arch=x86_64 --target-os=darwin --cpu=x86_64'
+[win]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
+[win-ia32]='--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-'
 )
 declare -gA extcflags=(
 [linux]='-fno-math-errno -fno-signed-zeros'
 [linux-86_32]='-m32 -fno-math-errno -fno-signed-zeros'
-[macos]=
-[windows]=
+[osx]=
+[win]=
+[win-ia32]=
 )
 declare -gA extldflags=(
 [linux]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
 [linux-x86_32]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
-[macos]=
-[windows]='-Wl,--nxcompat -Wl,--dynamicbase'
+[osx]=
+[win]='-Wl,--nxcompat -Wl,--dynamicbase'
+[win-ia32]='-Wl,--nxcompat -Wl,--dynamicbase'
 )
 srcdir=/tmp/nwff
 mkdir -p ${srcdir}/chromium-ffmpeg
@@ -54,38 +57,44 @@ cd ../release
 declare -gA cc=(
 [linux]=gcc
 [linux-x86_32]='gcc -m32'
-[macos]=clang # unsupported
-[windows]=x86_64-w64-mingw32-gcc
+[osx]=clang # unsupported
+[win]=x86_64-w64-mingw32-gcc
+[win-ia32]=i686-w64-mingw32-gcc
 )
 declare -gA strip=(
 [linux]='strip --strip-unneeded'
 [linux-x86_32]='strip --strip-unneeded'
-[macos]='strip -x'
-[windows]='x86_64-w64-mingw32-strip --strip-unneeded'
+[osx]='strip -x'
+[win]='x86_64-w64-mingw32-strip --strip-unneeded'
+[win-ia32]='i686-w64-mingw32-gcc-strip --strip-unneeded'
 )
 declare -gA gccflag=(
 [linux]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
 [linux-x86_32]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
-[macos]=
-[windows]='-lbcrypt'
+[osx]=
+[win]='-lbcrypt'
+[win-ia32]='-lbcrypt'
 )
 declare -gA ldwholearchive=(
 [linux]='whole-archive '
 [linux-x86_32]='whole-archive '
-[macos]='force_load,'
-[windows]='whole-archive '
+[osx]='force_load,'
+[win]='whole-archive '
+[win-ia32]='whole-archive '
 )
 declare -gA ldnowholearchive=(
 [linux]='--no-whole-archive'
 [linux-x86_32]='--no-whole-archive'
-[macos]=
-[windows]='--no-whole-archive'
+[osx]=
+[win]='--no-whole-archive'
+[win-ia32]='--no-whole-archive'
 )
 declare -gA libext=(
 [linux]=so
 [linux-x86_32]=so
-[macos]=dylib
-[windows]=dll
+[osx]=dylib
+[win]=dll
+[win-ia32]=dll
 )
 ${cc["$2"]} -shared  ${extldflags["$2"]} -flto=auto \
 	-Wl,--${ldwholearchive["$2"]}lib/libavcodec.a lib/libavformat.a \
