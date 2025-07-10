@@ -54,12 +54,34 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} windows
-          #zip -9 /tmp/neff/release/${{ needs.is-latest.outputs.nw }}-windows-x64.zip /tmp/nwff/release/libffmpeg.dll
+          #zip -9 /tmp/nwff/release/${{ needs.is-latest.outputs.nw }}-win-x64.zip /tmp/nwff/release/libffmpeg.dll
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
           name: win
-          path: '/tmp/nwff/release/*.dll'
+          path: '/tmp/nwff/release/*.zip'
+
+  build-win-ia32:
+    needs: is-latest
+    name: "Build for Windowsia32 on Ubuntu"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+      - name: Setup build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl jq git build-essential nasm zip mingw-w64
+      - name: Build
+        working-directory: ${{ github.workspace }}
+        run: |
+          bash ./build-linux.sh ${{ needs.is-latest.outputs.nw }} windows
+          #zip -9 /tmp/nwff/release/${{ needs.is-latest.outputs.nw }}-win-ia32.zip /tmp/nwff/release/libffmpeg.dll
+      - name: Upload the artifacts
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: win-ia32
+          path: '/tmp/nwff/release/*.zip'
 
   build-macos:
     needs: is-latest
@@ -73,7 +95,6 @@ jobs:
       - name: Delete unused SDKs
         # To free up disk space to not run out during the run
         run: |
-          false
           sudo rm -rf ~/.dotnet
           sudo rm -rf /Library/Android
           sudo rm -rf /Library/Developer/CoreSimulator
@@ -149,7 +170,8 @@ jobs:
           files: |
             release/mac/*.zip
             release/linux/*.zst
-            release/win/*.dll
+            release/win/*.zip
+            release/winia32/*.zip
           tag_name: ${{ env.NW }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
