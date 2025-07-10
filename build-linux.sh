@@ -78,7 +78,7 @@ declare -gA ldnowholearchive=(
 [linux]='--no-whole-archive'
 [linux-x86_32]='--no-whole-archive'
 [macos]=''
-[windows]='whole-archive'
+[windows]='--no-whole-archive'
 )
 declare -gA libext=(
 [linux]=so
