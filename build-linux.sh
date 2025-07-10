@@ -3,7 +3,7 @@
 # See BUILD.gn and chromium/config/Chrome/linux/x64/
 declare -A ffbuildflags=(
 [linux-x64]=
-[linux-ia32]='--arch=x86 --target-os=linux --cpu=x86 --enable-cross-compile'
+[linux-ia32]='--arch=x86 --enable-cross-compile'
 [osx-x64]='--arch=x86_64 --enable-cross-compile \"--cc=clang -arch x86_64\"'
 [osx-arm64]='--arch=arm64'
 [win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
