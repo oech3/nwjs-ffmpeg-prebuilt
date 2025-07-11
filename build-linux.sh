@@ -4,7 +4,7 @@
 declare -A ffbuildflags=(
 [linux-x64]=
 [linux-ia32]='--arch=x86 --enable-cross-compile'
-[osx-x64]='--arch=x86_64 --enable-cross-compile --cc=clang'
+[osx-x64]='--arch=x86_64 --enable-cross-compile'
 [osx-arm64]='--arch=arm64'
 [win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
 [win-ia32]='--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-'
@@ -25,6 +25,14 @@ declare -A extldflags=(
 [win-x64]='-Wl,--nxcompat -Wl,--dynamicbase'
 [win-ia32]='-Wl,--nxcompat -Wl,--dynamicbase'
 )
+declare -A cc=(
+[linux-x64]=gcc
+[linux-ia32]='gcc -m32'
+[osx-x64]='clang -arch x86_64'
+[osx-arm64]=clang
+[win-x64]=x86_64-w64-mingw32-gcc
+[win-ia32]=i686-w64-mingw32-gcc
+)
 srcdir=/tmp/nwff
 mkdir -p ${srcdir}/chromium-ffmpeg
 cd ${srcdir}/chromium-ffmpeg
@@ -38,7 +46,7 @@ git fetch --depth=1 origin $_commit
 git checkout $_commit
 # Use ffmpeg's native opus decoder not in kAllowedAudioCodecs at https://github.com/chromium/chromium/blob/main/media/ffmpeg/ffmpeg_common.cc
 sed -i.bak "s/^ *\.p\.name *=.*/.p.name=\"libopus\",/" libavcodec/opus/dec.c
-diff libavcodec/opus/dec.c{,.bak}
+diff libavcodec/opus/dec.c{.bak,} || :
 ./configure \
   --disable-{debug,all,autodetect,doc,iconv,network,symver} \
   --disable-{error-resilience,faan,iamf} \
@@ -49,6 +57,7 @@ diff libavcodec/opus/dec.c{,.bak}
   --enable-demuxer=ogg,matroska,webm,wav,flac,mp3,mov,aac \
   --enable-decoder=vorbis,opus,flac,pcm_s16le,mp3,aac,h264 \
   --enable-parser=aac,flac,h264,mpegaudio,opus,vorbis,vp9 \
+  --cc="${cc["$2"]}" \
   --extra-cflags="-O3 -pipe -fno-plt -flto=auto ${extcflags["$2"]}" \
   --extra-ldflags="${extldflags["$2"]}" \
   ${ffbuildflags["$2"]} \
@@ -58,14 +67,6 @@ diff libavcodec/opus/dec.c{,.bak}
   make -j3 install
 
 cd ../release
-declare -A cc=(
-[linux-x64]=gcc
-[linux-ia32]='gcc -m32'
-[osx-x64]='clang -arch x86_64'
-[osx-arm64]=clang
-[win-x64]=x86_64-w64-mingw32-gcc
-[win-ia32]=i686-w64-mingw32-gcc
-)
 declare -A strip=(
 [linux-x64]='strip --strip-unneeded'
 [linux-ia32]='strip --strip-unneeded'
