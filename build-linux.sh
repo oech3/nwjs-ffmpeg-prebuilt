@@ -38,6 +38,7 @@ mkdir -p ${srcdir}/chromium-ffmpeg
 cd ${srcdir}/chromium-ffmpeg
 # Fetch source
 _chromium=$(curl -s https://nwjs.io/versions.json | jq -r ".versions[] | select(.version==\"v$1\") | .components.chromium")
+echo $_chromium
 # Use rg for macOS
 _commit=$(curl -sL https://raw.githubusercontent.com/chromium/chromium/refs/tags/${_chromium}/DEPS | rg -oP "'ffmpeg_revision': '\K[0-9a-f]{40}'" | tr -d \')
 git init
@@ -67,14 +68,6 @@ diff libavcodec/opus/dec.c{.bak,} || :
   make -j3 install
 
 cd ../release
-declare -A strip=(
-[linux-x64]='strip --strip-unneeded'
-[linux-ia32]='strip --strip-unneeded'
-[osx-x64]='strip -x'
-[osx-arm64]='strip -x'
-[win-x64]='x86_64-w64-mingw32-strip --strip-unneeded'
-[win-ia32]='i686-w64-mingw32-strip --strip-unneeded'
-)
 declare -A gccflag=(
 [linux-x64]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
 [linux-ia32]='-Wl,-u,avutil_version -lm -Wl,-Bsymbolic'
@@ -115,5 +108,5 @@ ${cc["$2"]} -shared  ${extldflags["$2"]} -flto=auto \
 	-lm ${gccflag["$2"]} \
 	-o libffmpeg.${libext["$2"]}
 
-${strip["$2"]} libffmpeg.${libext["$2"]}
+llvm-strip --strip-unneeded libffmpeg.${libext["$2"]}
  zip -9 "$1"-"$2".zip libffmpeg.${libext["$2"]}
