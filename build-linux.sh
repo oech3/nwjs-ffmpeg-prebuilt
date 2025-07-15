@@ -58,7 +58,7 @@ diff libavcodec/opus/dec.c{.bak,} || :
   --enable-decoder=vorbis,opus,flac,pcm_s16le,mp3,aac,h264 \
   --enable-parser=aac,flac,h264,mpegaudio,opus,vorbis,vp9 \
   --cc="${cc["$2"]}" \
-  --extra-cflags="-O3 -pipe -fno-plt -flto=auto ${extcflags["$2"]}" \
+  --extra-cflags="-O3 -fuse-ld=mold -pipe -fno-plt -flto=auto ${extcflags["$2"]}" \
   --extra-ldflags="${extldflags["$2"]}" \
   ${ffbuildflags["$2"]} \
   --enable-{pic,asm,hardcoded-tables} \
