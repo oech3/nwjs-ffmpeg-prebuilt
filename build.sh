@@ -45,8 +45,8 @@ diff libavcodec/opus/dec.c{.bak,} || :
   make DESTDIR=. install
 _symbols=$(awk '{print "-Wl,-u," $1}' sigs.txt | paste -sd ' ' -)
 declare -A gccflag=(
-[osx-x64-at]=
-[osx-arm64-at]=
+[osx-x64-at]='-framework AudioToolbox'
+[osx-arm64-at]='-framework AudioToolbox'
 )
 declare -A startgroup=(
 [osx-x64-at]='-Wl,-force_load,'
