@@ -1,6 +1,6 @@
 #!/bin/bash -e
 declare -A ffbuildflags=(
-[osx-x64-at]='--arch=x86_64 --enable-cross-compile'
+[osx-x64-at]='--arch=x86_64 --enable-cross-compile --enable-audiotoolbox --enable-decoder=aac_at,mp3_at --disable-decoder=aac,mp3'
 [osx-arm64-at]='--arch=arm64 --enable-audiotoolbox --enable-decoder=aac_at,mp3_at --disable-decoder=aac,mp3'
 )
 declare -A extcflags=(
