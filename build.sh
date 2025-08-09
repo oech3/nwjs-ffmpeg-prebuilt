@@ -1,35 +1,19 @@
 #!/bin/bash -e
 declare -A ffbuildflags=(
-[linux-x64]=
-[linux-ia32]='--arch=x86 --enable-cross-compile'
-[osx-x64]='--arch=x86_64 --enable-cross-compile'
-[osx-arm64]='--arch=arm64'
-[win-x64]='--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-'
-[win-ia32]='--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-'
+[osx-x64-at]='--arch=x86_64 --enable-cross-compile'
+[osx-arm64-at]='--arch=arm64 --enable-audiotoolbox --enable-decoder=aac_at,mp3_at --disable-decoder=aac,mp3'
 )
 declare -A extcflags=(
-[linux-x64]='-fno-math-errno -fno-signed-zeros -fno-semantic-interposition -fomit-frame-pointer'
-[linux-ia32]='-m32 -fno-math-errno -fno-signed-zeros -fno-semantic-interposition -fomit-frame-pointer'
-[osx-x64]='-arch x86_64 --target=x86_64-apple-macosx'
-[osx-arm64]=
-[win-x64]=
-[win-ia32]=
+[osx-x64-at]='-arch x86_64 --target=x86_64-apple-macosx'
+[osx-arm64-at]=
 )
 declare -A extldflags=(
-[linux-x64]='-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
-[linux-ia32]='-m32 -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs'
-[osx-x64]=
-[osx-arm64]=
-[win-x64]='-Wl,--nxcompat -Wl,--dynamicbase'
-[win-ia32]='-Wl,--nxcompat -Wl,--dynamicbase'
+[osx-x64-at]=
+[osx-arm64-at]=
 )
 declare -A cc=(
-[linux-x64]=gcc
-[linux-ia32]='gcc -m32'
-[osx-x64]='clang -arch x86_64'
-[osx-arm64]=clang
-[win-x64]=x86_64-w64-mingw32-gcc
-[win-ia32]=i686-w64-mingw32-gcc
+[osx-x64-at]='clang -arch x86_64'
+[osx-arm64-at]=clang
 )
 
 $(command -v ggrep||command -v grep)  -oP '\bav[a-z0-9_]*(?=\s*\()' chromium/ffmpeg.sigs > sigs.txt
@@ -61,38 +45,22 @@ diff libavcodec/opus/dec.c{.bak,} || :
   make DESTDIR=. install
 _symbols=$(awk '{print "-Wl,-u," $1}' sigs.txt | paste -sd ' ' -)
 declare -A gccflag=(
-[linux-x64]="${_symbols} -Wl,-u,avutil_version -Wl,--version-script=export.map -lm -Wl,-Bsymbolic"
-[linux-ia32]="${_symbols} -Wl,-u,avutil_version -Wl,--version-script=export.map -lm -Wl,-Bsymbolic"
-[osx-x64]=
-[osx-arm64]=
-[win-x64]="${_symbols} -Wl,-u,avutil_version -Wl,--version-script=export.map -lbcrypt"
-[win-ia32]="${_symbols} -Wl,-u,avutil_version -Wl,--version-script=export.map -lbcrypt"
+[osx-x64-at]=
+[osx-arm64-at]=
 )
 declare -A startgroup=(
-[linux-x64]='-Wl,--start-group ' # space is not typo
-[linux-ia32]='-Wl,--start-group '
-[osx-x64]='-Wl,-force_load,'
-[osx-arm64]='-Wl,-force_load,'
-[win-x64]='-Wl,--start-group '
-[win-ia32]='-Wl,--whole-archive ' # filtering of funcs cause few kb binary
+[osx-x64-at]='-Wl,-force_load,'
+[osx-arm64-at]='-Wl,-force_load,'
 )
 declare -A endgroup=(
-[linux-x64]='-Wl,--end-group'
-[linux-ia32]='-Wl,--end-group'
-[osx-x64]=
-[osx-arm64]=
-[win-x64]='-Wl,--end-group'
-[win-ia32]='-Wl,--no-whole-archive'
+[osx-x64-at]=
+[osx-arm64-at]=
 )
 declare -A libname=(
-[linux-x64]=libffmpeg.so
-[linux-ia32]=libffmpeg.so
-[osx-x64]=libffmpeg.dylib
-[osx-arm64]=libffmpeg.dylib
-[win-x64]=ffmpeg.dll
-[win-ia32]=ffmpeg.dll
+[osx-x64-at]=libffmpeg.dylib
+[osx-arm64-at]=libffmpeg.dylib
 )
-
+echo Unifying .a...
 ${cc["$1"]} -shared  ${extldflags["$1"]} -flto=auto \
 	${startgroup["$1"]} libav{codec,format,util}.a libswresample.a ${endgroup["$1"]} \
 	${gccflag["$1"]} -lm -Wl,-s \
