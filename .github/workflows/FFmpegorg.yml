@@ -32,7 +32,7 @@ jobs:
           FF_VER=7.1.1
           SO=$(curl -s https://git.ffmpeg.org/gitweb/ffmpeg.git/blob_plain/n${FF_VER}:/libavcodec/version_major.h |grep -oP 'LIBAVCODEC_VERSION_MAJOR\s+\K\d+')
           # Do not build existing binary
-          curl -s -o /dev/null -w "%{http_code}" https://github.com/oech3/nwjs-ffmpeg-prebuilt/releases/download/download/${{ github.event.inputs.version }}/ffmpeg-${{ github.event.inputs.version }}-linux-x64.zip|grep -q 404
+          curl -s -o /dev/null -w "%{http_code}" https://github.com/oech3/nwjs-ffmpeg-prebuilt/releases/download/download/${{ github.event.inputs.version }}/ffmpeg-${{ github.event.inputs.version }}-linux-x64.tar.zst|grep -q 404
           echo "avcodec=$SO" >> $GITHUB_OUTPUT
           echo "ff=$FF_VER" >> $GITHUB_OUTPUT
           echo "Build $FF_VER with avcodec $SO"
@@ -64,7 +64,8 @@ jobs:
           cd ffmpeg
           bash ${{ github.workspace }}/patch-ffmpegorg-chromium.sh ffmpegorg
           MAKEFLAGS=-j3 bash ${{ github.workspace }}/build.sh ${{ matrix.target }}
-          zip -9 ffmpeg-${{ needs.build-or-not.outputs.ff }}-${{ matrix.target }}.zip ${{ matrix.soname }}
+          mv ${{ matrix.soname }} ${{ matrix.soname }}.${{ needs.build-or-not.outputs.avcodec }}
+          tar -I 'zstd -19' -cf ffmpeg-${{ needs.build-or-not.outputs.ff }}-${{ matrix.target }}.tar.zst ${{ matrix.soname }}.${{ needs.build-or-not.outputs.avcodec }}
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
