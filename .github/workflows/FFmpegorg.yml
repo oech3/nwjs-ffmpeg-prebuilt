@@ -63,7 +63,7 @@ jobs:
           mv ffmpeg-${{ needs.build-or-not.outputs.ff }} ffmpeg || : # Use same dirname with master
           cd ffmpeg
           bash ${{ github.workspace }}/patch-ffmpegorg-chromium.sh ffmpegorg
-          MAKEFLAGS=-j3 bash ${{ github.workspace }}/build.sh ${{ matrix.target }}
+          MAKEFLAGS=-j5 bash ${{ github.workspace }}/build.sh ${{ matrix.target }}
           mv ${{ matrix.soname }} ${{ matrix.soname }}.${{ needs.build-or-not.outputs.avcodec }}
           tar -I 'zstd -19' -cf ffmpeg-${{ needs.build-or-not.outputs.ff }}-${{ matrix.target }}.tar.zst ${{ matrix.soname }}.${{ needs.build-or-not.outputs.avcodec }}
       - name: Upload the artifacts
