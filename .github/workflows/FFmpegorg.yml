@@ -29,7 +29,7 @@ jobs:
         id: set_ff
         run: |
           FF_VER=$(curl -s https://www.ffmpeg.org/download.html | grep -o -m 1 'FFmpeg [0-9.]* ".*"' | cut -d ' ' -f 2)
-          FF_VER=7.1.1
+          #FF_VER=7.1.2
           SO=$(curl -s https://git.ffmpeg.org/gitweb/ffmpeg.git/blob_plain/n${FF_VER}:/libavcodec/version_major.h |grep -oP 'LIBAVCODEC_VERSION_MAJOR\s+\K\d+')
           # Do not build existing binary
           curl -s -o /dev/null -w "%{http_code}" https://github.com/oech3/nwjs-ffmpeg-prebuilt/releases/download/download/${{ github.event.inputs.version }}/ffmpeg-${{ github.event.inputs.version }}-linux-x64.tar.zst|grep -q 404
