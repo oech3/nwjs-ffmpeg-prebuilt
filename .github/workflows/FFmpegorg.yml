@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.target }}
-          path: '/tmp/ffmpeg/*.zip'
+          path: '/tmp/ffmpeg/*.tar.zst'
 
   build-release:
     needs: [ build-or-not, build ]
@@ -90,7 +90,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/*/*.zip
+            release/*/*.tar.zst
           tag_name: ${{ needs.build-or-not.outputs.ff }}
           body: |
             avcodec${{ needs.build-or-not.outputs.avcodec }}
