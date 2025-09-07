@@ -10,9 +10,9 @@ on:
       version:
         description: 'Version number to build'
         required: true
-        default: '0.91.0'
+        default: '0.103.0'
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.ref }}-gn
   cancel-in-progress: false
 
 jobs:
@@ -21,12 +21,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       nw: ${{ steps.set_nw.outputs.nw }}
+      chromium: ${{ steps.set_nw.outputs.chromium }}
+      commit: ${{ steps.set_nw.outputs.commit }}
+      avcodec: ${{ steps.set_nw.outputs.avcodec }}
+      avformat: ${{ steps.set_nw.outputs.avformat }}
+      avutil: ${{ steps.set_nw.outputs.avutil }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
       - name: Check if latest
         working-directory: .github/workflows
-        run: bash ./is_latest.sh ${{ github.event_name }}
+        run: true #bash ./is_latest.sh ${{ github.event_name }}
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
       - name: Write NW version to env and set output
@@ -38,133 +43,65 @@ jobs:
             NW_VERSION=$(curl -s https://nwjs.io/versions.json | jq -r '.latest' | sed 's/v//')
             echo "nw=$NW_VERSION" >> $GITHUB_OUTPUT
           fi
+          CHROMIUM=$(curl -s https://nwjs.io/versions.json | jq -r ".versions[] | select(.version==\"v$NW_VERSION\") | .components.chromium")
+          echo "chromium=$CHROMIUM" >> $GITHUB_OUTPUT
+          _commit=$(curl -sL https://chromium.googlesource.com/chromium/src.git/+/refs/tags/${CHROMIUM}/DEPS?format=TEXT | base64 -d | grep -oP "'ffmpeg_revision': '\K[0-9a-f]{40}'" | tr -d \')
+           echo "commit=$_commit" >> $GITHUB_OUTPUT
+          _url=https://chromium.googlesource.com/chromium/third_party/ffmpeg
+          SO=$(curl -sL ${_url}/+/${_commit}/libavcodec/version_major.h?format=TEXT|base64 -d | grep -oP 'LIBAVCODEC_VERSION_MAJOR\s+\K\d+')
+          echo "avcodec=$SO" >> $GITHUB_OUTPUT
+          SO=$(curl -sL ${_url}/+/${_commit}/libavformat/version_major.h?format=TEXT|base64 -d | grep -oP 'LIBAVFORMAT_VERSION_MAJOR\s+\K\d+')
+          echo "avformat=$SO" >> $GITHUB_OUTPUT
+          SO=$(curl -sL ${_url}/+/${_commit}/libavutil/version.h?format=TEXT|base64 -d | grep -oP 'LIBAVUTIL_VERSION_MAJOR\s+\K\d+')
+          echo "avutil=$SO" >> $GITHUB_OUTPUT
 
-
-  build-win:
+  build:
     needs: is-latest
-    name: "Build for Windows"
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: powershell
+    name: "Build for ${{ matrix.target }}"
+    runs-on: ${{ matrix.host }}
+    strategy:
+      matrix:
+        target: [linux-x64]
+        include:
+          - target: linux-x64
+            host: ubuntu-latest
+            soname: libffmpeg.so
+
     steps:
-      - name: Setup Node
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version: 20
       - name: Checkout code
         uses: actions/checkout@v4.2.2
-      - name: Debug NW version
+      - name: Setup build tools
+        run: ${{ matrix.setupcmd }}
+      - name: Build
+        working-directory: ${{ github.workspace }}
         run: |
-          echo "NW Version: ${{ needs.is-latest.outputs.nw }}"
-      - name: Copy to C drive
-        run: cp D:\a C:\ -Recurse
-      - name: Support long paths
-        run: git config --system core.longpaths true
-      - name: npm install, build and test
-        working-directory: "C:/a/${{ github.event.repository.name }}/${{ github.event.repository.name }}"
-        run: |
-          pwd
-          npm install
-          node build --arch x64 --version ${{ needs.is-latest.outputs.nw }}
-          node build --arch ia32 --version ${{ needs.is-latest.outputs.nw }}
+          mkdir -p /tmp/ff
+          cd /tmp/ff
+          curl -L https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest -o gn.zip
+          $(command -v bsdtar -xf|command -v unzip) gn.zip
+          PATH+=":/tmp/ff"
+          curl https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${{ needs.is-latest.outputs.chromium }}-lite.tar.xz | tar --strip-components=1 -xJf -
+          python tools/clang/scripts/update.py
+          python tools/rust/update_rust.py
+          gn gen -v out/Default --fail-on-unused-args --script-executable=/usr/bin/python --args="is_debug=false is_component_ffmpeg=true proprietary_codecs=true is_official_build=true target_cpu=\"x86\" ffmpeg_branding=\"Chrome\""
+          ninja -C out/Default ${{ matrix.soname }}
+          strip -s out/Default/${{ matrix.soname }}
+          zip -9 ${{ needs.is-latest.outputs.nw }}-${{ matrix.target }}-gn.zip out/Default/${{ matrix.soname }}
       - name: Upload the artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: win
-          path: 'c:/a/**/build/out/*.zip'
-
-  build-macos:
-    needs: is-latest
-    name: "Build for MacOS"
-    runs-on: macos-15
-    steps:
-      - name: Setup Node
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version: 20
-      - name: Delete unused SDKs
-        # To free up disk space to not run out during the run
-        run: |
-          sudo rm -rf ~/.dotnet
-          sudo rm -rf /Library/Android
-          sudo rm -rf /Library/Developer/CoreSimulator
-        continue-on-error: true
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-      - name: npm install, build and test
-        run: |
-          npm install
-          node build --arch x64 --version ${{ needs.is-latest.outputs.nw }}
-          node build --arch arm64 --version ${{ needs.is-latest.outputs.nw }}
-      - name: Upload the artifacts
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: mac
-          path: 'build/out/*.zip'
-
-  build-linux:
-    needs: is-latest
-    name: "Build for Linux"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Node
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version: 20
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
-
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-      - name: npm install, build and test
-        run: |
-          npm install
-          node build --arch x64 -v ${{ needs.is-latest.outputs.nw }}
-          node build --arch ia32 -v ${{ needs.is-latest.outputs.nw }}
-      - name: Upload the artifacts
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: linux
-          path: 'build/out/*.zip'
+          name: ${{ matrix.target }}
+          path: '/tmp/ff/out/Default/*.zip'
 
   build-release:
-    needs: [ build-win, build-macos, build-linux ]
+    needs: [ is-latest, build ]
     name: "Build Release"
     runs-on: "ubuntu-latest"
     steps:
-      - name: Get NWJS version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "NW=$(curl -s https://nwjs.io/versions.json | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
-          fi
-
       - uses: actions/download-artifact@v4.3.0
         with:
-          name: win
-          path: release/win
-      - uses: actions/download-artifact@v4.3.0
-        with:
-          name: linux
-          path: release/linux
-      - uses: actions/download-artifact@v4.3.0
-        with:
-          name: mac
-          path: release/mac
+          # all: true
+          path: release/
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -174,9 +111,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/mac/*.zip
-            release/linux/*.zip
-            release/win/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/build/out/*.zip
-          tag_name: ${{ env.NW }}
+            release/*/*.zip
+          tag_name: ${{ needs.is-latest.outputs.nw }}
+          body: |
+            Chromium ${{ needs.is-latest.outputs.chromium }}
+            Commit of chromium/third_pirty/ffmpeg ${{ needs.is-latest.outputs.commit }}
+            avcodec${{ needs.is-latest.outputs.avcodec }}
+            avformat${{ needs.is-latest.outputs.avformat }}
+            avutil${{ needs.is-latest.outputs.avutil }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
