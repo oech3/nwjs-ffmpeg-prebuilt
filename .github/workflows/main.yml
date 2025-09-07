@@ -82,6 +82,7 @@ jobs:
           curl -L https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest -o gn.zip
           $(command -v bsdtar -xf|command -v unzip) gn.zip
           export PATH+=":/tmp/ff" CC=clang CXX=clang++ AR=ar NM=nm
+          python tools/rust/update_rust.py
           curl https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${{ needs.is-latest.outputs.chromium }}-lite.tar.xz | tar --strip-components=1 -xJf -
           gn gen -v out/Default --fail-on-unused-args --script-executable=/usr/bin/python --args="is_debug=false is_component_ffmpeg=true proprietary_codecs=true is_official_build=true target_cpu=\"x64\" ffmpeg_branding=\"Chrome\""
           ninja -C out/Default ${{ matrix.soname }}
