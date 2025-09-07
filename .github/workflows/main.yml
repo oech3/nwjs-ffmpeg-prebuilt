@@ -70,8 +70,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
-      - name: Setup build tools
-        run: ${{ matrix.setupcmd }}
+      #- name: Setup build tools
+      #  run: ${{ matrix.setupcmd }}
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
@@ -83,7 +83,7 @@ jobs:
           curl https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${{ needs.is-latest.outputs.chromium }}-lite.tar.xz | tar --strip-components=1 -xJf -
           python tools/clang/scripts/update.py
           python tools/rust/update_rust.py
-          gn gen -v out/Default --fail-on-unused-args --script-executable=/usr/bin/python --args="is_debug=false is_component_ffmpeg=true proprietary_codecs=true is_official_build=true target_cpu=\"x86\" ffmpeg_branding=\"Chrome\""
+          gn gen -v out/Default --fail-on-unused-args --script-executable=/usr/bin/python --args="is_debug=false is_component_ffmpeg=true proprietary_codecs=true is_official_build=true target_cpu=\"x64\" ffmpeg_branding=\"Chrome\""
           ninja -C out/Default ${{ matrix.soname }}
           strip -s out/Default/${{ matrix.soname }}
           zip -9 ${{ needs.is-latest.outputs.nw }}-${{ matrix.target }}-gn.zip out/Default/${{ matrix.soname }}
