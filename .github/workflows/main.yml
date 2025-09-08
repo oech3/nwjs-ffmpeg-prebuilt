@@ -71,6 +71,7 @@ jobs:
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
+          sudo apt-get install libxkbcommon-dev
           mkdir -p /tmp/ff
           cd /tmp/ff
           curl -L https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest -o gn.zip
