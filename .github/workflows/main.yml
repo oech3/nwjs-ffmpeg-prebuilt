@@ -71,6 +71,7 @@ jobs:
       - name: Build
         working-directory: ${{ github.workspace }}
         run: |
+          sudo apt-get update
           sudo apt-get install libxkbcommon-dev libnss3-dev libdbus-1-dev libudev-dev libglib2.0-dev libva-dev
           mkdir -p /tmp/ff
           cd /tmp/ff
@@ -100,10 +101,6 @@ jobs:
         with:
           # all: true
           path: release/
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: release/
 
       - name: Upload binaries to release
         uses: softprops/action-gh-release@v2
