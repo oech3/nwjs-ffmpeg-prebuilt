@@ -80,7 +80,7 @@ jobs:
           export PATH+=":/tmp/ff" CC=clang CXX=clang++
           python tools/clang/scripts/update.py
           python tools/rust/update_rust.py # should be system rust
-          gn gen -v out/Default --fail-on-unused-args --script-executable=/usr/bin/python --args="is_debug=false is_component_ffmpeg=true proprietary_codecs=true is_official_build=true use_sysroot=false use_glib=false use_cups=false target_cpu=\"x64\" ffmpeg_branding=\"Chrome\""
+          gn gen -v out/Default --fail-on-unused-args --script-executable=/usr/bin/python --args="is_debug=false is_component_ffmpeg=true proprietary_codecs=true is_official_build=true use_sysroot=false use_gtk=false use_qt5=false use_qt6=false use_glib=false use_cups=false use_pangocairo=false target_cpu=\"x64\" ffmpeg_branding=\"Chrome\""
           ninja -C out/Default ${{ matrix.soname }}
           strip -s out/Default/${{ matrix.soname }}
           zip -9 ${{ needs.is-latest.outputs.nw }}-${{ matrix.target }}-gn.zip out/Default/${{ matrix.soname }}
