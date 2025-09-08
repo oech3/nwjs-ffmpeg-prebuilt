@@ -72,7 +72,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           sudo apt-get update
-          sudo apt-get install libxkbcommon-dev libnss3-dev libdbus-1-dev libudev-dev libglib2.0-dev libva-dev mesa-dri-drivers
+          sudo apt-get install libxkbcommon-dev libnss3-dev libdbus-1-dev libudev-dev libglib2.0-dev libva-dev libgl1-mesa-dev
           mkdir -p /tmp/ff
           cd /tmp/ff
           curl -L https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest -o gn.zip
