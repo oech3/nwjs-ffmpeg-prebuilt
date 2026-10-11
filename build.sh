@@ -1,6 +1,6 @@
 #!/bin/bash -e
-# For MSYS2. Doubtful setting. MinGW shell should care about it.
-PATH+=":/mingw64/bin:/mingw32/bin:/opt/bin:/clangarm64/bin"
+# todo: this should be set as MSYSTEM on MSYS2
+PATH+=":/mingw32/bin:/opt/bin:/clangarm64/bin"
 # Do not use declare -A for old bash on macOS
 
 case $1 in
@@ -14,7 +14,7 @@ case $1 in
 linux-ia32) ffbuild="--arch=x86 --enable-cross-compile" ;;
 osx-x64) ffbuild="--arch=x86_64 --enable-cross-compile --disable-decoder=h264" ;;
 osx-arm64) ffbuild="--arch=arm64 --disable-decoder=h264" ;; # Chromium decodes H264 via videotoolbox
-win-x64) ffbuild="--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-" ;;
+win-x64) ffbuild="--arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32ucrt-" ;;
 win-arm64) ffbuild="--arch=aarch64 --target-os=mingw32 --cross-prefix=aarch64-w64-mingw32-" ;;
 win-ia32) ffbuild="--arch=x86 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-" ;;
 esac
@@ -36,7 +36,7 @@ case $1 in
 linux-*|osx-arm64) cc=gcc ;; # symlink to clang at macOS
 osx-x64) cc="clang -arch x86_64";;
 linux-ia32) cc="gcc -m32" ;;
-win-x64) cc=x86_64-w64-mingw32-gcc ;;
+win-x64) cc=x86_64-w64-mingw32ucrt-gcc ;;
 win-arm64) cc=aarch64-w64-mingw32-gcc ;;
 win-ia32) cc=i686-w64-mingw32-gcc ;;
 esac

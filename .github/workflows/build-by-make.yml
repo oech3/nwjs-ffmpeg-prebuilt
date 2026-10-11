@@ -78,8 +78,8 @@ jobs:
             #setupcmd: sudo apt-get update && sudo apt-get install -y gcc-mingw-w64-aarch64
             #soname: libffmpeg.so
           - target: win-x64
-            host: ubuntu-latest
-            setupcmd: sudo apt-get update && sudo apt-get install -y nasm gcc-mingw-w64-x86-64
+            host: ubuntu-26.04 # needs cross-gcc for UCRT64
+            setupcmd: sudo apt-get update && sudo apt-get install -y nasm gcc-mingw-w64-ucrt64
             soname: ffmpeg.dll
           - target: win-ia32
             host: ubuntu-latest
@@ -126,7 +126,7 @@ jobs:
       matrix:
         include:
   #        - target: win-x64
-  #          pkgs: mingw-w64-cross-mingw64-binutils
+  #          pkgs: mingw-w64-cross-mingw64-binutils # todo: switch to UCRT64
           - target: win-arm64 # Should switch to cross-build on Ubuntu
             pkgs: mingw-w64-cross-mingwarm64-gcc mingw-w64-cross-mingwarm64-binutils
   #        - target: win-ia32
